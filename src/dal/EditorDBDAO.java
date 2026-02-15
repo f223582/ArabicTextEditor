@@ -65,6 +65,8 @@ public class EditorDBDAO implements IEditorDBDAO {
 			LOGGER.error(e.getMessage());
 		}
 
+		conn = DatabaseConnection.getInstance().getConnection();
+
 		try (PreparedStatement fileStmt = conn.prepareStatement(insertQuery, PreparedStatement.RETURN_GENERATED_KEYS);
 				PreparedStatement pageStmt = conn.prepareStatement(pageQuery, PreparedStatement.RETURN_GENERATED_KEYS);
 				PreparedStatement transliteratetStmt = conn.prepareStatement(transliterateQuery);
@@ -76,7 +78,6 @@ public class EditorDBDAO implements IEditorDBDAO {
 				PreparedStatement pklStmt = conn.prepareStatement(pklQuery);
 				PreparedStatement pmiStmt = conn.prepareStatement(pmiQuery);
 				PreparedStatement tfidfStmt = conn.prepareStatement(tfidfQuery)) {
-			conn = DatabaseConnection.getInstance().getConnection();
 			double tfidf = performTFIDF(getAllExistingFilesContent(conn), content);
 			conn.setAutoCommit(false);
 
@@ -196,7 +197,7 @@ public class EditorDBDAO implements IEditorDBDAO {
 
 					pklStmt.setInt(1, pageId);
 					pklStmt.setString(2, word);
-					
+
 					if (pkl == null || Double.isNaN(pkl) || Double.isInfinite(pkl)) {
 					    pklStmt.setNull(3, java.sql.Types.DOUBLE);
 					} else {
@@ -204,6 +205,8 @@ public class EditorDBDAO implements IEditorDBDAO {
 					}
 					pklStmt.addBatch();
 				}
+				
+				
 				pklStmt.executeBatch();
 
 				scoreMap = performPMI(page.getPageContent());
@@ -215,12 +218,12 @@ public class EditorDBDAO implements IEditorDBDAO {
 
 					pmiStmt.setInt(1, pageId);
 					pmiStmt.setString(2, word);
+
 					if (pmi == null || Double.isNaN(pmi) || Double.isInfinite(pmi)) {
 					    pmiStmt.setNull(3, java.sql.Types.DOUBLE);
 					} else {
 					    pmiStmt.setDouble(3, pmi);
 					}
-					pmiStmt.addBatch();
 				}
 				pmiStmt.executeBatch();
 
