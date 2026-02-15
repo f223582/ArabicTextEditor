@@ -611,12 +611,22 @@ public class EditorDBDAO implements IEditorDBDAO {
 	}
 
 	@Override
-	public synchronized double performTFIDF(List<String> unSelectedDocsContent, String selectedDocContent) {
-		TFIDFCalculator tfidf = new TFIDFCalculator();
-		for (String unSelectedDocContent : unSelectedDocsContent) {
-			tfidf.addDocumentToCorpus(unSelectedDocContent);
-		}
-		return tfidf.calculateDocumentTfIdf(selectedDocContent);
+	public synchronized double performTFIDF(List<String> unSelectedDocsContent,
+	                                         String selectedDocContent) {
+	    TFIDFCalculator tfidf = new TFIDFCalculator();
+
+	    for (String doc : unSelectedDocsContent) {
+	        tfidf.addDocumentToCorpus(doc);
+	    }
+
+	    double score = tfidf.calculateDocumentTfIdf(selectedDocContent);
+
+	    if (Double.isNaN(score) || Double.isInfinite(score)) {
+	        System.out.println("⚠ TFIDF returned invalid value: " + score);
+	        score = 0.0;
+	    }
+
+	    return score;
 	}
 
 	@Override
