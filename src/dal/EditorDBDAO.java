@@ -64,8 +64,6 @@ public class EditorDBDAO implements IEditorDBDAO {
 			e.printStackTrace();
 			LOGGER.error(e.getMessage());
 		}
-		
-		conn = DatabaseConnection.getInstance().getConnection();
 
 		try (PreparedStatement fileStmt = conn.prepareStatement(insertQuery, PreparedStatement.RETURN_GENERATED_KEYS);
 				PreparedStatement pageStmt = conn.prepareStatement(pageQuery, PreparedStatement.RETURN_GENERATED_KEYS);
@@ -78,6 +76,7 @@ public class EditorDBDAO implements IEditorDBDAO {
 				PreparedStatement pklStmt = conn.prepareStatement(pklQuery);
 				PreparedStatement pmiStmt = conn.prepareStatement(pmiQuery);
 				PreparedStatement tfidfStmt = conn.prepareStatement(tfidfQuery)) {
+			conn = DatabaseConnection.getInstance().getConnection();
 			double tfidf = performTFIDF(getAllExistingFilesContent(conn), content);
 			conn.setAutoCommit(false);
 
@@ -197,7 +196,12 @@ public class EditorDBDAO implements IEditorDBDAO {
 
 					pklStmt.setInt(1, pageId);
 					pklStmt.setString(2, word);
-					pklStmt.setDouble(3, pkl);
+					
+					if (pkl == null || Double.isNaN(pkl) || Double.isInfinite(pkl)) {
+					    pklStmt.setNull(3, java.sql.Types.DOUBLE);
+					} else {
+					    pklStmt.setDouble(3, pkl);
+					}
 					pklStmt.addBatch();
 				}
 				pklStmt.executeBatch();
@@ -211,7 +215,11 @@ public class EditorDBDAO implements IEditorDBDAO {
 
 					pmiStmt.setInt(1, pageId);
 					pmiStmt.setString(2, word);
-					pmiStmt.setDouble(3, pmi);
+					if (pmi == null || Double.isNaN(pmi) || Double.isInfinite(pmi)) {
+					    pmiStmt.setNull(3, java.sql.Types.DOUBLE);
+					} else {
+					    pmiStmt.setDouble(3, pmi);
+					}
 					pmiStmt.addBatch();
 				}
 				pmiStmt.executeBatch();
@@ -220,7 +228,11 @@ public class EditorDBDAO implements IEditorDBDAO {
 
 //			tfidfStmt = conn.prepareStatement(tfidfQuery);
 			tfidfStmt.setInt(1, fileID);
-			tfidfStmt.setDouble(2, tfidf);
+			if (Double.isNaN(tfidf) || Double.isInfinite(tfidf)) {
+			    tfidfStmt.setNull(2, java.sql.Types.DOUBLE);
+			} else {
+			    tfidfStmt.setDouble(2, tfidf);
+			}
 			tfidfStmt.executeUpdate();
 
 			conn.commit();
