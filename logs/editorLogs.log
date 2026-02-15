@@ -20,3 +20,17 @@
 2024-12-10 21:25:27.599 [AWT-EventQueue-0] INFO  pl.EditorPO - Do you want to delete the selected file?
 2024-12-10 21:25:40.338 [AWT-EventQueue-0] INFO  pl.EditorPO - TF-IDF Score for 'surah falaq.txt' is: 0.009627044174443686
 2024-12-10 21:25:45.280 [AWT-EventQueue-0] INFO  pl.EditorPO - TF-IDF Score for 'quran-simple.txt' is: 0.014417461355646866
+2026-02-15 16:33:10.453 [Thread-0] ERROR pl.EditorPO - (conn=3) Unknown column 'NaN' in 'field list'
+2026-02-15 16:33:16.214 [Thread-0] INFO  pl.EditorPO - test2.txt failed to upload!
+2026-02-15 16:33:22.725 [AWT-EventQueue-0] INFO  pl.EditorPO - Do you want to delete the selected file?
+2026-02-15 16:35:51.624 [Thread-0] ERROR pl.EditorPO - (conn=4) Unknown column 'NaN' in 'field list'
+2026-02-15 16:35:54.242 [Thread-0] INFO  pl.EditorPO - test2.txt failed to upload!
+2026-02-15 16:37:34.823 [Thread-0] ERROR pl.EditorPO - (conn=5) Unknown column 'NaN' in 'field list'
+2026-02-15 16:37:38.302 [Thread-0] INFO  pl.EditorPO - test2.txt failed to upload!
+2026-02-15 16:38:25.142 [Thread-0] ERROR pl.EditorPO - (conn=6) Unknown column 'NaN' in 'field list'
+2026-02-15 16:38:30.377 [Thread-0] INFO  pl.EditorPO - test2.txt failed to upload!
+2026-02-15 16:42:27.056 [Thread-0] INFO  pl.EditorPO - test2.txt uploaded successfully!
+2026-02-15 16:42:32.480 [AWT-EventQueue-0] INFO  pl.EditorPO - Do you want to delete the selected file?
+2026-02-15 16:42:35.625 [AWT-EventQueue-0] INFO  pl.EditorPO - Do you want to delete the selected file?
+2026-02-15 16:42:36.417 [AWT-EventQueue-0] INFO  pl.EditorPO - File deleted successfully!
+2026-02-15 16:42:42.736 [AWT-EventQueue-0] INFO  pl.EditorPO - TF-IDF Score for 'test1' is: 0.6931471805599453

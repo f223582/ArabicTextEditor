@@ -65,6 +65,8 @@ public class EditorDBDAO implements IEditorDBDAO {
 			LOGGER.error(e.getMessage());
 		}
 
+		conn = DatabaseConnection.getInstance().getConnection();
+
 		try (PreparedStatement fileStmt = conn.prepareStatement(insertQuery, PreparedStatement.RETURN_GENERATED_KEYS);
 				PreparedStatement pageStmt = conn.prepareStatement(pageQuery, PreparedStatement.RETURN_GENERATED_KEYS);
 				PreparedStatement transliteratetStmt = conn.prepareStatement(transliterateQuery);
@@ -76,7 +78,6 @@ public class EditorDBDAO implements IEditorDBDAO {
 				PreparedStatement pklStmt = conn.prepareStatement(pklQuery);
 				PreparedStatement pmiStmt = conn.prepareStatement(pmiQuery);
 				PreparedStatement tfidfStmt = conn.prepareStatement(tfidfQuery)) {
-			conn = DatabaseConnection.getInstance().getConnection();
 			double tfidf = performTFIDF(getAllExistingFilesContent(conn), content);
 			conn.setAutoCommit(false);
 
@@ -196,9 +197,16 @@ public class EditorDBDAO implements IEditorDBDAO {
 
 					pklStmt.setInt(1, pageId);
 					pklStmt.setString(2, word);
-					pklStmt.setDouble(3, pkl);
+
+					if (pkl == null || Double.isNaN(pkl) || Double.isInfinite(pkl)) {
+					    pklStmt.setNull(3, java.sql.Types.DOUBLE);
+					} else {
+					    pklStmt.setDouble(3, pkl);
+					}
 					pklStmt.addBatch();
 				}
+				
+				
 				pklStmt.executeBatch();
 
 				scoreMap = performPMI(page.getPageContent());
@@ -210,8 +218,12 @@ public class EditorDBDAO implements IEditorDBDAO {
 
 					pmiStmt.setInt(1, pageId);
 					pmiStmt.setString(2, word);
-					pmiStmt.setDouble(3, pmi);
-					pmiStmt.addBatch();
+
+					if (pmi == null || Double.isNaN(pmi) || Double.isInfinite(pmi)) {
+					    pmiStmt.setNull(3, java.sql.Types.DOUBLE);
+					} else {
+					    pmiStmt.setDouble(3, pmi);
+					}
 				}
 				pmiStmt.executeBatch();
 
@@ -219,7 +231,11 @@ public class EditorDBDAO implements IEditorDBDAO {
 
 //			tfidfStmt = conn.prepareStatement(tfidfQuery);
 			tfidfStmt.setInt(1, fileID);
-			tfidfStmt.setDouble(2, tfidf);
+			if (Double.isNaN(tfidf) || Double.isInfinite(tfidf)) {
+			    tfidfStmt.setNull(2, java.sql.Types.DOUBLE);
+			} else {
+			    tfidfStmt.setDouble(2, tfidf);
+			}
 			tfidfStmt.executeUpdate();
 
 			conn.commit();
@@ -598,12 +614,22 @@ public class EditorDBDAO implements IEditorDBDAO {
 	}
 
 	@Override
-	public synchronized double performTFIDF(List<String> unSelectedDocsContent, String selectedDocContent) {
-		TFIDFCalculator tfidf = new TFIDFCalculator();
-		for (String unSelectedDocContent : unSelectedDocsContent) {
-			tfidf.addDocumentToCorpus(unSelectedDocContent);
-		}
-		return tfidf.calculateDocumentTfIdf(selectedDocContent);
+	public synchronized double performTFIDF(List<String> unSelectedDocsContent,
+	                                         String selectedDocContent) {
+	    TFIDFCalculator tfidf = new TFIDFCalculator();
+
+	    for (String doc : unSelectedDocsContent) {
+	        tfidf.addDocumentToCorpus(doc);
+	    }
+
+	    double score = tfidf.calculateDocumentTfIdf(selectedDocContent);
+
+	    if (Double.isNaN(score) || Double.isInfinite(score)) {
+	        System.out.println("⚠ TFIDF returned invalid value: " + score);
+	        score = 0.0;
+	    }
+
+	    return score;
 	}
 
 	@Override
