@@ -64,6 +64,8 @@ public class EditorDBDAO implements IEditorDBDAO {
 			e.printStackTrace();
 			LOGGER.error(e.getMessage());
 		}
+		
+		conn = DatabaseConnection.getInstance().getConnection();
 
 		try (PreparedStatement fileStmt = conn.prepareStatement(insertQuery, PreparedStatement.RETURN_GENERATED_KEYS);
 				PreparedStatement pageStmt = conn.prepareStatement(pageQuery, PreparedStatement.RETURN_GENERATED_KEYS);
@@ -76,7 +78,6 @@ public class EditorDBDAO implements IEditorDBDAO {
 				PreparedStatement pklStmt = conn.prepareStatement(pklQuery);
 				PreparedStatement pmiStmt = conn.prepareStatement(pmiQuery);
 				PreparedStatement tfidfStmt = conn.prepareStatement(tfidfQuery)) {
-			conn = DatabaseConnection.getInstance().getConnection();
 			double tfidf = performTFIDF(getAllExistingFilesContent(conn), content);
 			conn.setAutoCommit(false);
 
