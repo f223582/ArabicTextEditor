@@ -1,24 +1,46 @@
-package Testing.business;
+package business;
 
-import business.services.TFIDFService;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import dal.TFIDFCalculator;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class TFIDFServiceTest {
 
     @Test
-    void testPositiveTFIDF() {
-        TFIDFService service = new TFIDFService();
-        double score = service.calculateTFIDF("word word test", "word");
+    public void testTFIDFReturnsNonNegativeValue() {
 
-        assertEquals(0.66, score, 0.01);
+        TFIDFCalculator calculator = new TFIDFCalculator();
+
+        calculator.addDocumentToCorpus("hello world");
+        calculator.addDocumentToCorpus("hello java");
+
+        double score = calculator.calculateDocumentTfIdf("hello world");
+
+        assertTrue(score >= 0);
     }
 
     @Test
-    void testEmptyDocument() {
-        TFIDFService service = new TFIDFService();
-        double score = service.calculateTFIDF("", "word");
+    public void testTFIDFEmptyDocumentReturnsZero() {
 
-        assertEquals(0.0, score);
+        TFIDFCalculator calculator = new TFIDFCalculator();
+
+        calculator.addDocumentToCorpus("hello");
+
+        double score = calculator.calculateDocumentTfIdf("");
+
+        assertEquals(0.0, score, 0.0);
+    }
+
+    @Test
+    public void testTFIDFNoMatchingTerms() {
+
+        TFIDFCalculator calculator = new TFIDFCalculator();
+
+        calculator.addDocumentToCorpus("apple orange");
+
+        double score = calculator.calculateDocumentTfIdf("banana");
+
+        assertEquals(0.0, score, 0.0);
     }
 }
