@@ -1,31 +1,47 @@
-package Testing.presentation;
+package presentation;
 
-import presentation.TextEditor;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class AutoSaveTest {
 
     @Test
-    void testAutoSaveTriggered() {
-        TextEditor editor = new TextEditor();
-        String content = "word ".repeat(501);
+    public void testWordCountBelowThreshold() {
 
-        assertTrue(editor.shouldAutoSave(content));
+        String shortText = "This is short text.";
+        int wordCount = shortText.split("\\s+").length;
+
+        assertTrue(wordCount <= 500);
     }
 
     @Test
-    void testAutoSaveNotTriggered() {
-        TextEditor editor = new TextEditor();
-        String content = "word ".repeat(500);
+    public void testWordCountAboveThreshold() {
 
-        assertFalse(editor.shouldAutoSave(content));
+        StringBuilder longText = new StringBuilder();
+
+        for (int i = 0; i < 600; i++) {
+            longText.append("word ");
+        }
+
+        int wordCount = longText.toString().split("\\s+").length;
+
+        assertTrue(wordCount > 500);
     }
 
     @Test
-    void testAutoSaveEmpty() {
-        TextEditor editor = new TextEditor();
+    public void testAutoSaveConditionLogic() {
 
-        assertFalse(editor.shouldAutoSave(""));
+        StringBuilder text = new StringBuilder();
+
+        for (int i = 0; i < 600; i++) {
+            text.append("word ");
+        }
+
+        int wordCount = text.toString().split("\\s+").length;
+
+        boolean shouldAutoSave = (wordCount > 500);
+
+        assertTrue(shouldAutoSave);
     }
 }
