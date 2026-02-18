@@ -1,24 +1,36 @@
-package Testing.data;
+package data;
 
-import data.persistence.HashUtil;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import dal.HashCalculator;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class HashingIntegrityTest {
 
     @Test
-    void testHashChangesAfterEdit() {
-        String hash1 = HashUtil.generateMD5("Original");
-        String hash2 = HashUtil.generateMD5("Edited");
+    public void testSameTextSameHash() throws Exception {
+
+        String hash1 = HashCalculator.calculateHash("Hello World");
+        String hash2 = HashCalculator.calculateHash("Hello World");
+
+        assertEquals(hash1, hash2);
+    }
+
+    @Test
+    public void testDifferentTextDifferentHash() throws Exception {
+
+        String hash1 = HashCalculator.calculateHash("Original Text");
+        String hash2 = HashCalculator.calculateHash("Modified Text");
 
         assertNotEquals(hash1, hash2);
     }
 
     @Test
-    void testSameContentSameHash() {
-        String hash1 = HashUtil.generateSHA1("Same");
-        String hash2 = HashUtil.generateSHA1("Same");
+    public void testEmptyStringHash() throws Exception {
 
-        assertEquals(hash1, hash2);
+        String hash = HashCalculator.calculateHash("");
+
+        assertNotNull(hash);
+        assertFalse(hash.isEmpty());
     }
 }
