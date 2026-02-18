@@ -1,20 +1,57 @@
-package Testing.business;
+package business;
 
-import business.commands.ImportCommand;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import bll.SearchWord;
+import dto.Documents;
+import dto.Pages;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 public class ImportCommandTest {
-
+    
     @Test
-    void testValidImport() {
-        ImportCommand cmd = new ImportCommand("sample.txt");
-        assertDoesNotThrow(cmd::execute);
+    public void testKeywordFoundInDocument() {
+        Pages page = new Pages(1, 1, 1, "upload");
+
+        Documents doc = new Documents(
+                1,
+                "TestDoc",
+                "dummyHash",
+                "dummyLastModified",
+                "dummyDateCreated",
+                Arrays.asList(page)
+        );
+
+        List<Documents> docs = Arrays.asList(doc);
+
+        List<String> result = SearchWord.searchKeyword("upload", docs);
+
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
     }
 
     @Test
-    void testInvalidImport() {
-        ImportCommand cmd = new ImportCommand("");
-        assertThrows(IllegalArgumentException.class, cmd::execute);
+    public void testKeywordNotFound() {
+        Pages page = new Pages(1, 1, 1, "hello java");
+
+        Documents doc = new Documents(
+                1,
+                "TestDoc",
+                "dummyHash",
+                "dummyLastModified",
+                "dummyDateCreated",
+                Arrays.asList(page)
+        );
+
+        List<Documents> docs = Arrays.asList(doc);
+
+        List<String> result = SearchWord.searchKeyword("python", docs);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
     }
 }
