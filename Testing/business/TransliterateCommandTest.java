@@ -1,25 +1,34 @@
-package Testing.business;
+package business;
 
-import business.commands.TransliterateCommand;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import dal.Transliteration;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class TransliterateCommandTest {
 
     @Test
-    void testTransliterationArabic() {
-        TransliterateCommand cmd = new TransliterateCommand("سلام");
-        String result = cmd.execute();
+    public void testArabicTransliterationNotEmpty() {
+
+        String result = Transliteration.transliterate("سلام");
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
     }
 
     @Test
-    void testEmptyInput() {
-        TransliterateCommand cmd = new TransliterateCommand("");
-        String result = cmd.execute();
+    public void testEmptyInputReturnsEmpty() {
+
+        String result = Transliteration.transliterate("");
 
         assertEquals("", result);
+    }
+
+    @Test
+    public void testEnglishInputRemainsValid() {
+
+        String result = Transliteration.transliterate("hello");
+
+        assertNotNull(result);
     }
 }
