@@ -1,32 +1,86 @@
-package Testing.presentation;
+package presentation;
 
-import presentation.TextEditor;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import bll.SearchWord;
+import dto.Documents;
+import dto.Pages;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 public class SearchReplaceTest {
 
-    @Test
-    void testReplaceWordSuccess() {
-        TextEditor editor = new TextEditor();
-        String result = editor.searchAndReplace("hello world", "world", "java");
+    @Test(expected = IllegalArgumentException.class)
+    public void testKeywordLessThanThreeThrowsException() {
 
-        assertEquals("hello java", result);
+        List<Documents> docs = Arrays.asList();
+        SearchWord.searchKeyword("hi", docs);
     }
 
     @Test
-    void testReplaceWordNotFound() {
-        TextEditor editor = new TextEditor();
-        String result = editor.searchAndReplace("hello world", "python", "java");
+    public void testKeywordFoundWithPrefix() {
 
-        assertEquals("hello world", result);
+        Pages page = new Pages(1, 1, 1, "hello world java");
+
+        Documents doc = new Documents(
+                1,
+                "TestDoc",
+                "hash",
+                "modified",
+                "created",
+                Arrays.asList(page)
+        );
+
+        List<Documents> docs = Arrays.asList(doc);
+
+        List<String> result = SearchWord.searchKeyword("world", docs);
+
+        assertFalse(result.isEmpty());
+        assertTrue(result.get(0).contains("hello world"));
     }
 
     @Test
-    void testReplaceEmptyContent() {
-        TextEditor editor = new TextEditor();
-        String result = editor.searchAndReplace("", "word", "new");
+    public void testKeywordFoundAtBeginning() {
 
-        assertEquals("", result);
+        Pages page = new Pages(1, 1, 1, "world java test");
+
+        Documents doc = new Documents(
+                1,
+                "TestDoc",
+                "hash",
+                "modified",
+                "created",
+                Arrays.asList(page)
+        );
+
+        List<Documents> docs = Arrays.asList(doc);
+
+        List<String> result = SearchWord.searchKeyword("world", docs);
+
+        assertFalse(result.isEmpty());
+        assertTrue(result.get(0).contains("world"));
+    }
+
+    @Test
+    public void testKeywordNotFound() {
+
+        Pages page = new Pages(1, 1, 1, "hello java");
+
+        Documents doc = new Documents(
+                1,
+                "TestDoc",
+                "hash",
+                "modified",
+                "created",
+                Arrays.asList(page)
+        );
+
+        List<Documents> docs = Arrays.asList(doc);
+
+        List<String> result = SearchWord.searchKeyword("python", docs);
+
+        assertTrue(result.isEmpty());
     }
 }
